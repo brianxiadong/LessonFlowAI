@@ -1,1 +1,0 @@
-我想用claude skills，利用AI编程的能力，通过自然语言，让ai帮我编写manim动画，manim使用https://github.com/ManimCommunity/manim.git，然后自动生成教学字幕、声音等等，形成一系列自动化AI教学的体系，是否可行，帮我输出方案
