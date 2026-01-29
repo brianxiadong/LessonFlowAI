@@ -5,6 +5,27 @@ description: 使用 FFmpeg 合成最终视频，包含音视频混合、字幕�
 
 # 合成出片 Skill (Post)
 
+## 前置条件：虚拟环境
+
+**⚠️ 重要**：执行此 Skill 前，必须确保虚拟环境已初始化。
+
+```bash
+# 环境名称: lessonflow_env
+# 位置: 项目根目录/.venv/lessonflow_env
+
+# 1. 如果环境不存在，先初始化：
+bash scripts/init_env.sh
+
+# 2. 后续使用虚拟环境的 Python（推荐）：
+.venv/lessonflow_env/bin/python your_script.py
+
+# 或激活后使用：
+source .venv/lessonflow_env/bin/activate
+python your_script.py
+```
+
+详细环境配置见：[00-environment.md](00-environment.md)
+
 ## 概述
 
 此 Skill 负责将渲染好的动画视频、配音、字幕合成为最终教学视频。支持：
@@ -136,8 +157,17 @@ ffmpeg -i final/lesson_raw.mp4 \
 
 ### 步骤 5：嵌入字幕
 
-**方式 A：硬烧字幕（视频内嵌）**
+**⚠️ 重要提示**: macOS 上 Homebrew 安装的 ffmpeg 可能不支持 `subtitles` 滤镜。推荐使用 **方式 C: Python moviepy** 方案。
 
+**方式 A：硬烧字幕（FFmpeg - 需要编译支持）**
+
+先检查 ffmpeg 是否支持 subtitles 滤镜：
+```bash
+ffmpeg -filters 2>&1 | grep -i subtitle
+# 如果没有输出，说明不支持，请使用方式 C
+```
+
+如果支持：
 ```bash
 ffmpeg -i final/lesson_mixed.mp4 \
     -vf "subtitles=subs/full_lesson.srt:force_style='FontName=Source Han Sans CN,FontSize=24,PrimaryColour=&HFFFFFF,OutlineColour=&H000000,Outline=2'" \
@@ -174,6 +204,83 @@ ffmpeg -i final/lesson_mixed.mp4 \
     -c:s srt \
     final/lesson_001_1080p_soft.mkv
 ```
+
+**方式 C：Python moviepy 硬烧字幕（推荐，跨平台）**
+
+当 FFmpeg 不支持 subtitles 滤镜时，使用 Python moviepy：
+
+```bash
+# 安装依赖
+pip install moviepy pillow
+```
+
+创建 `burn_subtitles.py`:
+
+```python
+#!/usr/bin/env python3
+"""使用 moviepy 将字幕烧入视频 - 兼容 moviepy 1.x 和 2.x"""
+import os, sys
+
+def parse_srt(srt_path):
+    """解析 SRT 字幕文件"""
+    subtitles = []
+    with open(srt_path, 'r', encoding='utf-8') as f:
+        content = f.read().strip()
+    for block in content.split('\n\n'):
+        lines = block.strip().split('\n')
+        if len(lines) >= 3:
+            start_time, end_time = lines[1].split(' --> ')
+            def time_to_seconds(t):
+                parts = t.replace(',', '.').split(':')
+                return float(parts[0])*3600 + float(parts[1])*60 + float(parts[2])
+            subtitles.append((time_to_seconds(start_time), time_to_seconds(end_time), '\n'.join(lines[2:])))
+    return subtitles
+
+def main():
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    srt_path = os.path.join(base_dir, 'subs', 'full_lesson.srt')
+    input_video = os.path.join(base_dir, 'final', 'pythagorean_theorem_1080p.mp4')
+    output_video = os.path.join(base_dir, 'final', 'pythagorean_theorem_1080p_hardsub.mp4')
+    
+    # 检测 moviepy 版本
+    import moviepy
+    if moviepy.__version__.startswith('2'):
+        from moviepy import VideoFileClip, TextClip, CompositeVideoClip
+    else:
+        from moviepy.editor import VideoFileClip, TextClip, CompositeVideoClip
+    
+    subtitles = parse_srt(srt_path)
+    video = VideoFileClip(input_video)
+    video_w, video_h = video.size
+    
+    # 找到可用字体
+    fonts = ['/System/Library/Fonts/PingFang.ttc', '/System/Library/Fonts/STHeiti Medium.ttc', 'Arial', None]
+    working_font = None
+    for font in fonts:
+        try:
+            TextClip(text="测试", font_size=42, color='white', font=font).close()
+            working_font = font
+            break
+        except: pass
+    
+    subtitle_clips = []
+    for start, end, text in subtitles:
+        if start >= video.duration: continue
+        end = min(end, video.duration)
+        txt = TextClip(text=text, font_size=40, color='white', stroke_color='black', 
+                       stroke_width=2, font=working_font, size=(video_w-100, None), method='caption')
+        txt = txt.with_position(('center', video_h - 100)).with_start(start).with_end(end)
+        subtitle_clips.append(txt)
+    
+    final_video = CompositeVideoClip([video] + subtitle_clips)
+    final_video.write_videofile(output_video, codec='libx264', fps=video.fps, preset='fast', threads=4, logger='bar')
+    video.close()
+    final_video.close()
+
+if __name__ == '__main__': main()
+```
+
+运行：`python3 burn_subtitles.py`
 
 ### 步骤 6：添加片头片尾
 
