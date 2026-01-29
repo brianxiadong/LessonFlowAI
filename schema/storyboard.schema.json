@@ -1,0 +1,335 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lessonflow.ai/schema/storyboard.schema.json",
+  "title": "LessonFlowAI Storyboard",
+  "description": "分镜脚本 DSL，作为各 Skill 之间的中间表示",
+  "type": "object",
+  "required": ["meta", "scenes"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "description": "课程元信息",
+      "required": ["title", "duration_target_s", "audience", "language", "style"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "课程标题",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "duration_target_s": {
+          "type": "integer",
+          "description": "目标时长（秒）",
+          "minimum": 30,
+          "maximum": 600
+        },
+        "audience": {
+          "type": "string",
+          "description": "目标受众",
+          "enum": ["beginner", "intermediate", "advanced", "general"]
+        },
+        "language": {
+          "type": "string",
+          "description": "语言代码",
+          "default": "zh-CN",
+          "pattern": "^[a-z]{2}(-[A-Z]{2})?$"
+        },
+        "style": {
+          "type": "string",
+          "description": "视觉风格",
+          "enum": ["tech-minimal", "hand-drawn", "corporate", "playful", "academic"]
+        },
+        "version": {
+          "type": "string",
+          "description": "分镜版本号",
+          "default": "1.0.0"
+        }
+      }
+    },
+    "scenes": {
+      "type": "array",
+      "description": "场景列表",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/scene"
+      }
+    }
+  },
+  "$defs": {
+    "scene": {
+      "type": "object",
+      "description": "单个场景定义",
+      "required": ["id", "duration_s", "visual", "animation", "narration"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "场景唯一标识",
+          "pattern": "^scene_[0-9]{3}$"
+        },
+        "duration_s": {
+          "type": "number",
+          "description": "场景时长（秒）",
+          "minimum": 5,
+          "maximum": 15
+        },
+        "_hash": {
+          "type": "string",
+          "description": "内容哈希，用于增量更新检测"
+        },
+        "visual": {
+          "$ref": "#/$defs/visual"
+        },
+        "animation": {
+          "$ref": "#/$defs/animation"
+        },
+        "narration": {
+          "$ref": "#/$defs/narration"
+        },
+        "subtitle": {
+          "$ref": "#/$defs/subtitle"
+        },
+        "checks": {
+          "$ref": "#/$defs/checks"
+        }
+      }
+    },
+    "visual": {
+      "type": "object",
+      "description": "视觉元素定义",
+      "required": ["elements", "layout"],
+      "properties": {
+        "elements": {
+          "type": "array",
+          "description": "元素列表（单场景不超过12个）",
+          "maxItems": 12,
+          "items": {
+            "$ref": "#/$defs/element"
+          }
+        },
+        "layout": {
+          "type": "object",
+          "description": "布局配置",
+          "required": ["grid"],
+          "properties": {
+            "grid": {
+              "type": "string",
+              "description": "网格类型",
+              "enum": ["3x3", "4x3", "2x2"],
+              "default": "3x3"
+            },
+            "margin": {
+              "type": "number",
+              "description": "边距（Manim单位）",
+              "default": 0.5,
+              "minimum": 0,
+              "maximum": 2
+            }
+          }
+        }
+      }
+    },
+    "element": {
+      "type": "object",
+      "description": "单个视觉元素",
+      "required": ["type", "id"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "元素类型",
+          "enum": ["text", "formula", "box", "circle", "arrow", "image", "graph", "axes", "code"]
+        },
+        "id": {
+          "type": "string",
+          "description": "元素唯一标识"
+        },
+        "content": {
+          "type": "string",
+          "description": "文本/公式内容"
+        },
+        "label": {
+          "type": "string",
+          "description": "标签文本"
+        },
+        "anchor": {
+          "type": "string",
+          "description": "锚点位置（3x3网格）",
+          "enum": [
+            "top-left", "top-center", "top-right",
+            "middle-left", "middle-center", "middle-right",
+            "bottom-left", "bottom-center", "bottom-right"
+          ],
+          "default": "middle-center"
+        },
+        "color": {
+          "type": "string",
+          "description": "颜色（Manim颜色名或十六进制）",
+          "default": "WHITE"
+        },
+        "size": {
+          "type": "string",
+          "description": "尺寸",
+          "enum": ["small", "medium", "large"],
+          "default": "medium"
+        },
+        "from": {
+          "type": "string",
+          "description": "箭头起点元素ID"
+        },
+        "to": {
+          "type": "string",
+          "description": "箭头终点元素ID"
+        },
+        "style": {
+          "type": "string",
+          "description": "样式变体",
+          "enum": ["solid", "dashed", "dotted"],
+          "default": "solid"
+        }
+      }
+    },
+    "animation": {
+      "type": "object",
+      "description": "动画定义",
+      "required": ["steps"],
+      "properties": {
+        "steps": {
+          "type": "array",
+          "description": "动画步骤序列",
+          "items": {
+            "$ref": "#/$defs/animationStep"
+          }
+        }
+      }
+    },
+    "animationStep": {
+      "type": "object",
+      "description": "单个动画步骤",
+      "required": ["action", "target"],
+      "properties": {
+        "action": {
+          "type": "string",
+          "description": "动画动作类型",
+          "enum": [
+            "create", "write", "fade_in", "fade_out",
+            "transform", "move_to", "scale", "rotate",
+            "highlight", "indicate", "draw", "undraw",
+            "wait"
+          ]
+        },
+        "target": {
+          "oneOf": [
+            {"type": "string"},
+            {"type": "array", "items": {"type": "string"}}
+          ],
+          "description": "目标元素ID（单个或多个）"
+        },
+        "duration_s": {
+          "type": "number",
+          "description": "动画时长（秒）",
+          "minimum": 0.1,
+          "maximum": 5,
+          "default": 1
+        },
+        "params": {
+          "type": "object",
+          "description": "动画额外参数",
+          "properties": {
+            "to_anchor": {
+              "type": "string",
+              "description": "移动目标锚点"
+            },
+            "scale_factor": {
+              "type": "number",
+              "description": "缩放倍数"
+            },
+            "angle": {
+              "type": "number",
+              "description": "旋转角度（弧度）"
+            },
+            "color": {
+              "type": "string",
+              "description": "变色目标"
+            }
+          }
+        }
+      }
+    },
+    "narration": {
+      "type": "object",
+      "description": "旁白/配音定义",
+      "required": ["vo_text"],
+      "properties": {
+        "vo_text": {
+          "type": "string",
+          "description": "配音文本",
+          "minLength": 1
+        },
+        "voice": {
+          "type": "string",
+          "description": "语音角色（阿里云TTS）",
+          "default": "zhitian_emo"
+        },
+        "speed": {
+          "type": "number",
+          "description": "语速倍率",
+          "minimum": 0.5,
+          "maximum": 2,
+          "default": 1
+        },
+        "pause_before_s": {
+          "type": "number",
+          "description": "开始前停顿（秒）",
+          "default": 0
+        },
+        "pause_after_s": {
+          "type": "number",
+          "description": "结束后停顿（秒）",
+          "default": 0.5
+        },
+        "emotion": {
+          "type": "string",
+          "description": "情绪标签",
+          "enum": ["neutral", "excited", "calm", "serious"],
+          "default": "neutral"
+        }
+      }
+    },
+    "subtitle": {
+      "type": "object",
+      "description": "字幕定义",
+      "properties": {
+        "text": {
+          "type": "string",
+          "description": "字幕文本（可与vo_text不同，更简洁）"
+        },
+        "style": {
+          "type": "string",
+          "description": "字幕样式",
+          "enum": ["default", "highlight", "small"],
+          "default": "default"
+        }
+      }
+    },
+    "checks": {
+      "type": "object",
+      "description": "质量检查规则",
+      "properties": {
+        "must_show": {
+          "type": "array",
+          "description": "必须出现的元素ID列表",
+          "items": {"type": "string"}
+        },
+        "no_overlap": {
+          "type": "boolean",
+          "description": "是否检查元素重叠",
+          "default": true
+        },
+        "bounds_check": {
+          "type": "boolean",
+          "description": "是否检查元素越界",
+          "default": true
+        }
+      }
+    }
+  }
+}

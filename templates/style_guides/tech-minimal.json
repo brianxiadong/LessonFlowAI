@@ -1,0 +1,39 @@
+{
+  "name": "tech-minimal",
+  "colors": {
+    "background": "#1a1a2e",
+    "primary": "#4fc3f7",
+    "secondary": "#81c784",
+    "accent": "#ffb74d",
+    "text": "#ffffff",
+    "error": "#ef5350",
+    "muted": "#9e9e9e"
+  },
+  "typography": {
+    "title_font": "Source Han Sans CN",
+    "body_font": "Source Han Sans CN",
+    "code_font": "JetBrains Mono",
+    "formula_font": "Computer Modern",
+    "title_size": 48,
+    "body_size": 32,
+    "small_size": 24
+  },
+  "layout": {
+    "grid": "3x3",
+    "margin": 0.5,
+    "padding": 0.3,
+    "element_spacing": 0.5
+  },
+  "shapes": {
+    "corner_radius": 0.1,
+    "stroke_width": 2,
+    "arrow_tip_size": 0.2,
+    "box_opacity": 0.2
+  },
+  "animations": {
+    "default_duration": 1.0,
+    "fast_duration": 0.5,
+    "slow_duration": 2.0,
+    "default_rate_func": "smooth"
+  }
+}

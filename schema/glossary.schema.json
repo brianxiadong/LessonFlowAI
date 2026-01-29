@@ -1,0 +1,91 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lessonflow.ai/schema/glossary.schema.json",
+  "title": "LessonFlowAI Glossary",
+  "description": "术语表，包含专业术语的读音和解释，用于 TTS 正确发音",
+  "type": "object",
+  "required": ["terms"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "description": "术语表元信息",
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "领域（如 machine-learning, calculus）"
+        },
+        "language": {
+          "type": "string",
+          "description": "主语言",
+          "default": "zh-CN"
+        },
+        "version": {
+          "type": "string",
+          "description": "版本号",
+          "default": "1.0.0"
+        }
+      }
+    },
+    "terms": {
+      "type": "object",
+      "description": "术语字典，key 为术语原文",
+      "additionalProperties": {
+        "$ref": "#/$defs/term"
+      }
+    }
+  },
+  "$defs": {
+    "term": {
+      "type": "object",
+      "description": "单个术语定义",
+      "required": ["pronunciation"],
+      "properties": {
+        "pronunciation": {
+          "type": "object",
+          "description": "发音信息",
+          "properties": {
+            "pinyin": {
+              "type": "string",
+              "description": "中文拼音（如 zhù yì lì）"
+            },
+            "ipa": {
+              "type": "string",
+              "description": "国际音标（如 əˈtenʃən）"
+            },
+            "phonetic": {
+              "type": "string",
+              "description": "简化音标/谐音（如 阿滕션）"
+            }
+          }
+        },
+        "ssml": {
+          "type": "string",
+          "description": "SSML 标记，用于 TTS 精确控制发音",
+          "examples": [
+            "<phoneme alphabet='ipa' ph='əˈtenʃən'>Attention</phoneme>",
+            "<say-as interpret-as='spell-out'>API</say-as>"
+          ]
+        },
+        "alias": {
+          "type": "string",
+          "description": "替换文本，TTS 朗读时用此文本替换原术语",
+          "examples": ["注意力机制", "A P I"]
+        },
+        "definition": {
+          "type": "string",
+          "description": "术语定义/解释"
+        },
+        "examples": {
+          "type": "array",
+          "description": "示例用法",
+          "items": {"type": "string"}
+        },
+        "related": {
+          "type": "array",
+          "description": "相关术语",
+          "items": {"type": "string"}
+        }
+      }
+    }
+  }
+}

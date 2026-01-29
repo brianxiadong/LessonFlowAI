@@ -1,0 +1,180 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lessonflow.ai/schema/style_guide.schema.json",
+  "title": "LessonFlowAI Style Guide",
+  "description": "视觉风格规范，确保课程系列统一风格",
+  "type": "object",
+  "required": ["name", "colors", "typography", "layout"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "风格名称",
+      "examples": ["tech-minimal", "hand-drawn", "corporate"]
+    },
+    "colors": {
+      "type": "object",
+      "description": "配色方案",
+      "required": ["background", "primary", "secondary", "accent", "text"],
+      "properties": {
+        "background": {
+          "type": "string",
+          "description": "背景色",
+          "default": "#1a1a2e"
+        },
+        "primary": {
+          "type": "string",
+          "description": "主色",
+          "default": "#4fc3f7"
+        },
+        "secondary": {
+          "type": "string",
+          "description": "次要色",
+          "default": "#81c784"
+        },
+        "accent": {
+          "type": "string",
+          "description": "强调色",
+          "default": "#ffb74d"
+        },
+        "text": {
+          "type": "string",
+          "description": "文字色",
+          "default": "#ffffff"
+        },
+        "error": {
+          "type": "string",
+          "description": "错误/警告色",
+          "default": "#ef5350"
+        },
+        "muted": {
+          "type": "string",
+          "description": "弱化色",
+          "default": "#9e9e9e"
+        }
+      }
+    },
+    "typography": {
+      "type": "object",
+      "description": "字体规范",
+      "properties": {
+        "title_font": {
+          "type": "string",
+          "description": "标题字体",
+          "default": "Source Han Sans CN"
+        },
+        "body_font": {
+          "type": "string",
+          "description": "正文字体",
+          "default": "Source Han Sans CN"
+        },
+        "code_font": {
+          "type": "string",
+          "description": "代码字体",
+          "default": "JetBrains Mono"
+        },
+        "formula_font": {
+          "type": "string",
+          "description": "公式字体（LaTeX）",
+          "default": "Computer Modern"
+        },
+        "title_size": {
+          "type": "number",
+          "description": "标题字号（Manim单位）",
+          "default": 48
+        },
+        "body_size": {
+          "type": "number",
+          "description": "正文字号",
+          "default": 32
+        },
+        "small_size": {
+          "type": "number",
+          "description": "小字号",
+          "default": 24
+        }
+      }
+    },
+    "layout": {
+      "type": "object",
+      "description": "布局规范",
+      "properties": {
+        "grid": {
+          "type": "string",
+          "description": "默认网格",
+          "enum": ["3x3", "4x3", "2x2"],
+          "default": "3x3"
+        },
+        "margin": {
+          "type": "number",
+          "description": "边距",
+          "default": 0.5
+        },
+        "padding": {
+          "type": "number",
+          "description": "内边距",
+          "default": 0.3
+        },
+        "element_spacing": {
+          "type": "number",
+          "description": "元素间距",
+          "default": 0.5
+        }
+      }
+    },
+    "shapes": {
+      "type": "object",
+      "description": "形状规范",
+      "properties": {
+        "corner_radius": {
+          "type": "number",
+          "description": "圆角半径",
+          "default": 0.1
+        },
+        "stroke_width": {
+          "type": "number",
+          "description": "线条宽度",
+          "default": 2
+        },
+        "arrow_tip_size": {
+          "type": "number",
+          "description": "箭头大小",
+          "default": 0.2
+        },
+        "box_opacity": {
+          "type": "number",
+          "description": "方框填充透明度",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.2
+        }
+      }
+    },
+    "animations": {
+      "type": "object",
+      "description": "动画规范",
+      "properties": {
+        "default_duration": {
+          "type": "number",
+          "description": "默认动画时长（秒）",
+          "default": 1
+        },
+        "fast_duration": {
+          "type": "number",
+          "description": "快速动画时长",
+          "default": 0.5
+        },
+        "slow_duration": {
+          "type": "number",
+          "description": "慢速动画时长",
+          "default": 2
+        },
+        "default_rate_func": {
+          "type": "string",
+          "description": "默认缓动函数",
+          "enum": ["smooth", "linear", "ease_in_out", "ease_in", "ease_out"],
+          "default": "smooth"
+        }
+      }
+    }
+  }
+}

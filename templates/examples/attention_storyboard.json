@@ -1,0 +1,354 @@
+{
+  "meta": {
+    "title": "Self-Attention 机制入门",
+    "duration_target_s": 60,
+    "audience": "beginner",
+    "language": "zh-CN",
+    "style": "tech-minimal",
+    "version": "1.0.0"
+  },
+  "scenes": [
+    {
+      "id": "scene_001",
+      "duration_s": 10,
+      "_hash": "a1b2c3d4",
+      "visual": {
+        "elements": [
+          {
+            "type": "text",
+            "id": "title",
+            "content": "什么是 Self-Attention?",
+            "anchor": "top-center",
+            "size": "large",
+            "color": "WHITE"
+          },
+          {
+            "type": "text",
+            "id": "subtitle",
+            "content": "让模型学会「关注」重要信息",
+            "anchor": "middle-center",
+            "size": "medium",
+            "color": "primary"
+          }
+        ],
+        "layout": {
+          "grid": "3x3",
+          "margin": 0.5
+        }
+      },
+      "animation": {
+        "steps": [
+          {
+            "action": "write",
+            "target": "title",
+            "duration_s": 2
+          },
+          {
+            "action": "wait",
+            "target": "title",
+            "duration_s": 1
+          },
+          {
+            "action": "fade_in",
+            "target": "subtitle",
+            "duration_s": 2
+          },
+          {
+            "action": "wait",
+            "target": "subtitle",
+            "duration_s": 2
+          }
+        ]
+      },
+      "narration": {
+        "vo_text": "今天我们来学习 Self-Attention 机制。它是 Transformer 模型的核心组件。",
+        "voice": "zhitian_emo",
+        "speed": 1,
+        "pause_after_s": 0.5
+      },
+      "subtitle": {
+        "text": "今天我们来学习 Self-Attention 机制"
+      },
+      "checks": {
+        "must_show": ["title", "subtitle"],
+        "no_overlap": true,
+        "bounds_check": true
+      }
+    },
+    {
+      "id": "scene_002",
+      "duration_s": 15,
+      "_hash": "e5f6g7h8",
+      "visual": {
+        "elements": [
+          {
+            "type": "text",
+            "id": "scene_title",
+            "content": "三个关键向量",
+            "anchor": "top-center",
+            "size": "large"
+          },
+          {
+            "type": "box",
+            "id": "query_box",
+            "label": "Query (Q)",
+            "anchor": "middle-left",
+            "color": "BLUE"
+          },
+          {
+            "type": "box",
+            "id": "key_box",
+            "label": "Key (K)",
+            "anchor": "middle-center",
+            "color": "GREEN"
+          },
+          {
+            "type": "box",
+            "id": "value_box",
+            "label": "Value (V)",
+            "anchor": "middle-right",
+            "color": "ORANGE"
+          },
+          {
+            "type": "text",
+            "id": "query_desc",
+            "content": "我在找什么？",
+            "anchor": "bottom-left",
+            "size": "small",
+            "color": "muted"
+          },
+          {
+            "type": "text",
+            "id": "key_desc",
+            "content": "我有什么特征？",
+            "anchor": "bottom-center",
+            "size": "small",
+            "color": "muted"
+          },
+          {
+            "type": "text",
+            "id": "value_desc",
+            "content": "我的实际内容",
+            "anchor": "bottom-right",
+            "size": "small",
+            "color": "muted"
+          }
+        ],
+        "layout": {
+          "grid": "3x3",
+          "margin": 0.5
+        }
+      },
+      "animation": {
+        "steps": [
+          {
+            "action": "write",
+            "target": "scene_title",
+            "duration_s": 1.5
+          },
+          {
+            "action": "fade_in",
+            "target": "query_box",
+            "duration_s": 1
+          },
+          {
+            "action": "fade_in",
+            "target": "query_desc",
+            "duration_s": 0.5
+          },
+          {
+            "action": "fade_in",
+            "target": "key_box",
+            "duration_s": 1
+          },
+          {
+            "action": "fade_in",
+            "target": "key_desc",
+            "duration_s": 0.5
+          },
+          {
+            "action": "fade_in",
+            "target": "value_box",
+            "duration_s": 1
+          },
+          {
+            "action": "fade_in",
+            "target": "value_desc",
+            "duration_s": 0.5
+          },
+          {
+            "action": "highlight",
+            "target": ["query_box", "key_box", "value_box"],
+            "duration_s": 2
+          }
+        ]
+      },
+      "narration": {
+        "vo_text": "Self-Attention 使用三个关键向量：Query 表示「我在找什么」，Key 表示「我有什么特征」，Value 表示「我的实际内容」。",
+        "voice": "zhitian_emo",
+        "speed": 1,
+        "pause_after_s": 0.5
+      },
+      "subtitle": {
+        "text": "Self-Attention 使用三个关键向量：Query、Key、Value"
+      },
+      "checks": {
+        "must_show": ["query_box", "key_box", "value_box"],
+        "no_overlap": true,
+        "bounds_check": true
+      }
+    },
+    {
+      "id": "scene_003",
+      "duration_s": 12,
+      "_hash": "i9j0k1l2",
+      "visual": {
+        "elements": [
+          {
+            "type": "text",
+            "id": "formula_title",
+            "content": "计算公式",
+            "anchor": "top-center",
+            "size": "large"
+          },
+          {
+            "type": "formula",
+            "id": "attention_formula",
+            "content": "\\text{Attention}(Q, K, V) = \\text{softmax}\\left(\\frac{QK^T}{\\sqrt{d_k}}\\right)V",
+            "anchor": "middle-center",
+            "size": "large"
+          },
+          {
+            "type": "text",
+            "id": "formula_explain",
+            "content": "通过 Q 和 K 计算相似度，再用 softmax 得到权重，最后加权求和 V",
+            "anchor": "bottom-center",
+            "size": "small",
+            "color": "muted"
+          }
+        ],
+        "layout": {
+          "grid": "3x3",
+          "margin": 0.5
+        }
+      },
+      "animation": {
+        "steps": [
+          {
+            "action": "write",
+            "target": "formula_title",
+            "duration_s": 1
+          },
+          {
+            "action": "write",
+            "target": "attention_formula",
+            "duration_s": 4
+          },
+          {
+            "action": "highlight",
+            "target": "attention_formula",
+            "duration_s": 2
+          },
+          {
+            "action": "fade_in",
+            "target": "formula_explain",
+            "duration_s": 2
+          }
+        ]
+      },
+      "narration": {
+        "vo_text": "这是 Attention 的计算公式。首先用 Query 和 Key 的点积计算相似度，除以根号 dk 进行缩放，然后用 softmax 归一化得到注意力权重，最后对 Value 加权求和。",
+        "voice": "zhitian_emo",
+        "speed": 0.95,
+        "pause_after_s": 1
+      },
+      "subtitle": {
+        "text": "Attention 公式：计算相似度 → softmax 归一化 → 加权求和"
+      },
+      "checks": {
+        "must_show": ["attention_formula"],
+        "no_overlap": true,
+        "bounds_check": true
+      }
+    },
+    {
+      "id": "scene_004",
+      "duration_s": 8,
+      "_hash": "m3n4o5p6",
+      "visual": {
+        "elements": [
+          {
+            "type": "text",
+            "id": "summary_title",
+            "content": "总结",
+            "anchor": "top-center",
+            "size": "large"
+          },
+          {
+            "type": "text",
+            "id": "point1",
+            "content": "✓ Self-Attention 让模型关注输入中的重要部分",
+            "anchor": "middle-left",
+            "size": "medium"
+          },
+          {
+            "type": "text",
+            "id": "point2",
+            "content": "✓ 通过 Q、K、V 三个向量实现",
+            "anchor": "middle-center",
+            "size": "medium"
+          },
+          {
+            "type": "text",
+            "id": "point3",
+            "content": "✓ 是 Transformer 的核心机制",
+            "anchor": "middle-right",
+            "size": "medium"
+          }
+        ],
+        "layout": {
+          "grid": "3x3",
+          "margin": 0.5
+        }
+      },
+      "animation": {
+        "steps": [
+          {
+            "action": "write",
+            "target": "summary_title",
+            "duration_s": 1
+          },
+          {
+            "action": "fade_in",
+            "target": "point1",
+            "duration_s": 1.5
+          },
+          {
+            "action": "fade_in",
+            "target": "point2",
+            "duration_s": 1.5
+          },
+          {
+            "action": "fade_in",
+            "target": "point3",
+            "duration_s": 1.5
+          }
+        ]
+      },
+      "narration": {
+        "vo_text": "总结一下：Self-Attention 让模型学会关注输入中最重要的部分，是 Transformer 的核心机制。",
+        "voice": "zhitian_emo",
+        "speed": 1,
+        "pause_after_s": 1
+      },
+      "subtitle": {
+        "text": "Self-Attention 是 Transformer 的核心机制"
+      },
+      "checks": {
+        "must_show": ["summary_title", "point1", "point2", "point3"],
+        "no_overlap": true,
+        "bounds_check": true
+      }
+    }
+  ]
+}
